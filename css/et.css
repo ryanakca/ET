@@ -1,0 +1,42 @@
+table {
+        /*border: 1px solid #CFB20E;*/
+        padding: 1px;
+}
+table thead tr {
+        background-color: #FFD900;
+}
+table tr {
+        background-color: #FFFCEB;
+        padding: 1px 0px 1px 0px;
+}
+table tr.alt {
+        background-color: #FFF5BA;
+}
+table tr.late {
+        background-color: #8F0000;
+        background-color: red;
+        color: yellow;
+        font-weight: bold;
+}
+table tr td {
+        padding: 0.1em 0.5em 0.1em 0.2em;
+        border: 1px solid white;
+}
+form fieldset {
+        width: 45em;
+}
+form fieldset label {
+        width: 3.5em;
+        margin-right: 0.5em;
+        text-align: right;
+        display: block;
+        float: left;
+}
+form fieldset input {
+        margin-left: 4em;
+}
+/* css for timepicker */
+#ui-timepicker-div dl{ text-align: left; }
+#ui-timepicker-div dl dt{ height: 25px; }
+#ui-timepicker-div dl dd{ margin: -25px 0 10px 65px; }
+

@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Equipment tracker</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<?php include 'header.php'; ?>
+<script type="text/javascript">
+    $(function() {
+        $("#due_datetime").timepicker({ ampm: true });
+    });
+</script>
+</head>
+<body>
+<h1>Sign out equipment</h1>
+<form method="post" action="et-so.php">
+<fieldset>
+<legend>Item</legend>
+<p><label for="item_name">Name:</label><input type="text" size="50" name="item_name" id="item_name" /></p>
+<p><label for="item_description">Description (optional):</label><input type="text" size="50" name="item_description" id="item_description" /></p>
+</fieldset>
+<fieldset>
+<legend>Borrower</legend>
+<p><label for="borrower_name">Name:</label><input type="text" size="50" name="borrower_name" id="borrower_name" /></p>
+<p><label for="borrower_netid">Net ID:</label><input type="text" size="10" name="borrower_netid" id="borrower_netid" /></p>
+</fieldset>
+<fieldset>
+<legend>Due date and time</legend>
+<p><label for="due_datetime">Date, time:</label><input type="text" size="20" name="due_datetime" id="due_datetime" /></p>
+</fieldset>
+<p><input type="submit" /></p>
+</form>
+<p><a href="et-lo.php">View loaned out items</a></p>
+</body>
+</html>
