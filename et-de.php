@@ -1,8 +1,6 @@
 <?php
 
-//$empty_check = implode('', $_POST);
-$empty_check = 'b';
-$_POST['row'] = 'delrow2';
+$empty_check = implode('', $_POST);
 if (empty($empty_check)) {
     echo header('Location: et-lo.php');
 } else {
