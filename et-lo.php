@@ -9,14 +9,35 @@
     <script type="text/javascript">
     function addED() {
             var $curTdPerRow = $('#loanedout tbody tr:first td').length;
+            $('#loanedout thead tr').append('<th>Edit</th>');
             $('#loanedout thead tr').append('<th>Delete</th>');
             $rows = $('#loanedout tbody tr').length;
             for (i = 0; i < $rows; i++) {
+                $('#loanedout tbody tr:eq('+i+')').append('<td id="editrow'+i+'" class="edit">Yes</td>');
                 $('#loanedout tbody tr:eq('+i+')').append('<td id="delrow'+i+'" class="delete">Yes</td>');
             }
     };
+    function toUrlOptions(data) {
+            var retStr = '';
+            for (var i in data) {
+                retStr += i + '=' + escape(data[i]) + '&';
+            }
+            return retStr.substring(0, retStr.lastIndexOf('&'));
+    };
     $(document).ready(function(){
                 $('#loanedout').load('et-lo-table.php', addED);
+    });
+    $('td.edit').live('click', function(){
+            var $row = $(this).attr('id');
+            var $post_data = [];
+            var $my_row = $(this).parent();
+            $my_row.each(function() {
+                $(this).find('td').each(function() {
+                    $post_data[this.className] = this.innerHTML;
+                });
+            });
+            $post_data['row'] = $row;
+            $(window.location).attr('href', 'et-ed.html?'+toUrlOptions($post_data));
     });
     $('td.delete').live('click', function(){
             var $row = $(this).attr('id');

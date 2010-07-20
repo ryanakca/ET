@@ -28,9 +28,12 @@ if (date($cells[$row][5]) < date($dt_fmt)) {
 }
 
 echo '<tr' . $class . '>';
-foreach ($cells[$row] as $cell) {
-    echo '<td>' . $cell . '</td>';
-}
+echo '<td class="item_name">' . $cells[$row][0] . '</td>';
+echo '<td class="item_description">' . $cells[$row][1] . '</td>';
+echo '<td class="borrower_name">' . $cells[$row][2] . '</td>';
+echo '<td class="borrower_netid">' . $cells[$row][3] . '</td>';
+echo '<td class="pickup_datetime">' . $cells[$row][4] . '</td>';
+echo '<td class="due_datetime">' . $cells[$row][5] . '</td>';
 echo '</tr>';
 $row++;
 }
