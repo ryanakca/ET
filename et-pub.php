@@ -8,12 +8,15 @@
     <?php include 'header.php' ?>
     <script type="text/javascript">
     $(document).ready(function(){
-        $('#loanedout').load('et-lo-table.php');
+        $('#loanedout').load('et-lo-table.php', function(){
+            $('#loanedout').tablesorter();
+        });
     });
     </script>
   </head>
   <body>
     <h1>Currently Loaned Out Items</h1>
+    <p><em>Click on a column header to sort that column.</em></p>
     <table id="loanedout">
     </table>
   </body>

@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <?php include 'header.php' ?>
     <script type="text/javascript">
-    function addED() {
+    function addEDS() {
             var $curTdPerRow = $('#loanedout tbody tr:first td').length;
             $('#loanedout thead tr').append('<th>Edit</th>');
             $('#loanedout thead tr').append('<th>Delete</th>');
@@ -16,6 +16,7 @@
                 $('#loanedout tbody tr:eq('+i+')').append('<td id="editrow'+i+'" class="edit">Yes</td>');
                 $('#loanedout tbody tr:eq('+i+')').append('<td id="delrow'+i+'" class="delete">Yes</td>');
             }
+            $('#loanedout').tablesorter();
     };
     function toUrlOptions(data) {
             var retStr = '';
@@ -25,7 +26,7 @@
             return retStr.substring(0, retStr.lastIndexOf('&'));
     };
     $(document).ready(function(){
-                $('#loanedout').load('et-lo-table.php', addED);
+                $('#loanedout').load('et-lo-table.php', addEDS);
     });
     $('td.edit').live('click', function(){
             var $row = $(this).attr('id');
@@ -43,13 +44,14 @@
             var $row = $(this).attr('id');
             if (confirm("Really delete this entry?")) {
                 $.post("et-de.php", { row: $row });
-                $('#loanedout').load('et-lo-table.php', addED);
+                $('#loanedout').load('et-lo-table.php', addEDS);
             }
     });
     </script>
   </head>
   <body>
     <h1>Currently Loaned Out Items</h1>
+    <p><em>Click on a column header to sort that column.</em></p>
     <table id="loanedout">
     </table>
   <p><a href="et-so.html">Sign out an item</a></p>
