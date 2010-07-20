@@ -12,9 +12,13 @@
 <?php include 'header.php'; ?>
 <script type="text/javascript">
     $(document).ready($(function() {
+        $('#pickup_datetime').datetimepicker({
+                ampm: false
+        });
         $('#due_datetime').datetimepicker({
                 ampm: false
-        })
+        });
+
     }));
 </script>
 </head>
@@ -25,15 +29,13 @@
 <legend>Item</legend>
 <p><label for="item_name">Name:</label><input type="text" size="50" name="item_name" id="item_name" /></p>
 <p><label for="item_description">Description (optional):</label><input type="text" size="50" name="item_description" id="item_description" /></p>
+<p><label for="due_datetime">Date, time:</label><input type="text" size="20" name="due_datetime" id="due_datetime" /></p>
 </fieldset>
 <fieldset>
 <legend>Borrower</legend>
 <p><label for="borrower_name">Name:</label><input type="text" size="50" name="borrower_name" id="borrower_name" /></p>
 <p><label for="borrower_netid">Net ID:</label><input type="text" size="10" name="borrower_netid" id="borrower_netid" /></p>
-</fieldset>
-<fieldset>
-<legend>Due date and time</legend>
-<p><label for="due_datetime">Date, time:</label><input type="text" size="20" name="due_datetime" id="due_datetime" /></p>
+<p><label for="pickup_datetime">Pickup date/time:</label><input type="text" size="20" name="pickup_datetime" id="pickup_datetime" /></p>
 </fieldset>
 <p><input type="submit" /></p>
 </form>
