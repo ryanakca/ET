@@ -28,8 +28,7 @@
           <th>Item Description</th>
           <th>Borrower Name</th>
           <th>Borrower NetID</th>
-          <th>Borrowed Time</th>
-          <th>Due Date</th>
+          <th>Pickup Time</th>
           <th>Due Time</th>
           <th>Delete</th>
         </tr>
