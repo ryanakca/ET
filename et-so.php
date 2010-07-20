@@ -9,8 +9,8 @@ $i_name   = $_POST['item_name'];
 $i_desc   = $_POST['item_description'];
 $b_name   = $_POST['borrower_name'];
 $b_netid  = $_POST['borrower_netid'];
-$b_time   = $_POST['pickup_datetime'];
-$d_time   = $_POST['due_datetime'];
+$b_time   = date('o-m-d\TH:i', strtotime($_POST['pickup_datetime']));
+$d_time   = date('o-m-d\TH:i', strtotime($_POST['due_datetime']));
 
 $empty_check = implode('', $_POST);
 if (empty($empty_check)) {
