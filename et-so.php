@@ -10,15 +10,20 @@ $i_desc   = $_POST['item_description'];
 $b_name   = $_POST['borrower_name'];
 $b_netid  = $_POST['borrower_netid'];
 $b_time   = date('o-m-d\TH:i', strtotime($_POST['pickup_datetime']));
+// See below for setting repetition
 $d_time   = date('o-m-d\TH:i', strtotime($_POST['due_datetime']));
 
 $empty_check = implode('', $_POST);
 if (empty($empty_check)) {
     die('ERROR: Submitted an empty form!');
 } else {
-    $entry = $i_name . $sep . $i_desc . $sep . $b_name . $sep . $b_netid . $sep . $b_time . $sep . $d_time . "\n";
-    $escaped_entry = htmlspecialchars($entry);
-    fwrite($fdb, $escaped_entry);
+    // Set $b_rep to 1 if not null;
+    $b_rep = (isset($_POST['repetition']) && !empty($_POST['repetition'])) ? $_POST['repetition'] : 1;
+    for ($rep = 0; $rep < $b_rep; $rep++) {
+        $entry = $i_name . $sep . $i_desc . $sep . $b_name . $sep . $b_netid . $sep . $b_time . $sep . $d_time . "\n";
+        $escaped_entry = htmlspecialchars($entry);
+        fwrite($fdb, $escaped_entry);
+    }
     fclose($fdb);
     echo header('Location: et-lo.php');
 }

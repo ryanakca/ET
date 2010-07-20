@@ -25,6 +25,9 @@ table tr td {
 form fieldset {
         width: 45em;
 }
+form fieldset p {
+        padding-bottom: 2em;
+}
 form fieldset label {
         width: 3.5em;
         margin-right: 0.5em;
@@ -34,6 +37,11 @@ form fieldset label {
 }
 form fieldset input {
         margin-left: 4em;
+        margin-right: 3em;
+}
+
+p#adv {
+        display: none;
 }
 /* css for timepicker */
 #ui-timepicker-div dl{ text-align: left; }
