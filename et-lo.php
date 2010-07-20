@@ -7,21 +7,22 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <?php include 'header.php' ?>
     <script type="text/javascript">
-    $(document).ready(function(){
-        $('#loanedout').load('et-lo-table.php', function(){
+    function addED() {
             var $curTdPerRow = $('#loanedout tbody tr:first td').length;
             $('#loanedout thead tr').append('<th>Delete</th>');
             $rows = $('#loanedout tbody tr').length;
             for (i = 0; i < $rows; i++) {
                 $('#loanedout tbody tr:eq('+i+')').append('<td id="delrow'+i+'" class="delete">Yes</td>');
             }
-        });
+    };
+    $(document).ready(function(){
+                $('#loanedout').load('et-lo-table.php', addED);
     });
     $('td.delete').live('click', function(){
             var $row = $(this).attr('id');
             if (confirm("Really delete this entry?")) {
                 $.post("et-de.php", { row: $row });
-                $('#loanedout').load('et-lo-table.php');
+                $('#loanedout').load('et-lo-table.php', addED);
             }
     });
     </script>
