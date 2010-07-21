@@ -40,40 +40,42 @@ class FlatFileDB {
 
     private function getTableRange($table)
     {
-        // Returns the first and last line number of a table, excluding the 
+        // Returns the first and last line number of a table, excluding the
         // header.
         //
-        // Caveat: We don't lock the table, you should do that in the function 
-        // you call this one from. Otherwise, someone might edit the database 
+        // Caveat: We don't lock the table, you should do that in the function
+        // you call this one from. Otherwise, someone might edit the database
         // and invalidate this table range.
 
-        $limits = [];
+        $limits = array();
 
         // Return to the top of file
         $this->fdb->rewind();
 
         // Marks whether or not we are in our table
         $in_table = false;
-        foreach ($this->fdb as $row) {
+        foreach ($this->fdb as $lineno => $row) {
             if (!$in_table) {
-                if ($row == $this->table_seperator . ' ' . $table . ' ' . $this->table_seperator) {
+                if (preg_match('/^'.$this->table_seperator . ' ' . $table . ' ' . $this->table_seperator .'.*/', $row)) {
                     $in_table = true;
-                    $limits[] = $this->fdb->ftell() + 1;
+                    $limits[] = $lineno + 1;
                 }
             } else {
-                if {preg_match('/^'.$this->table_seperator.'.*'.$this->table_seperator.'$/', $row)} {
+                if (preg_match('/^'.$this->table_seperator . ' .* ' . $this->table_seperator .'.*/', $row)) {
                     $in_table = false;
-                    // We're at the first line of the next table, so the last 
+                    // We're at the first line of the next table, so the last
                     // line of the desired table is the previous one.
-                    $limits[] = $this->fdb->ftell() - 1;
-                    // We can exit the loop, there's no more of our table later 
+                    $limits[] = $lineno - 1;
+                    // We can exit the loop, there's no more of our table later
                     // on.
                     break;
-                } elseif {$this->fdb->eof()} {
+                } elseif ($this->fdb->eof()) {
                     // We have reached the end of our DB
                     $limits[] = $this->fdb->ftell() - 1;
+                }
             }
         }
+        return $limits;
     }
 
     function getTable($table)
