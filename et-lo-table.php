@@ -11,33 +11,29 @@
   <tbody>
 <?php
 include 'config.php';
+include 'db.php';
 
-$fdb = fopen($db_filename, 'r') or die('ERROR: Unable to open database for reading!');
+$fdb = new FlatFileDB($db_filename, $table_sep, $cell_sep);
 
-$row = 0;
+foreach ($fdb->getTable($loans_table) as $rownum => $row) {
+    $class = '';
 
-while ($line = fgets($fdb)) {
-$cells[$row] = explode($sep, $line);
+    if (date($row[5]) < date($dt_fmt)) {
+        $class = ' class="late"';
+    } elseif ($rownum % 2 == 0) {
+        $class = ' class="alt"';
+    }
 
-$class = '';
-
-if (date($cells[$row][5]) < date($dt_fmt)) {
-    $class = ' class="late"';
-} elseif ($row % 2 == 0) {
-    $class = ' class="alt"';
+    echo '<tr' . $class . '>';
+    echo '<td class="item_name">' . $row[0] . '</td>';
+    echo '<td class="item_description">' . $row[1] . '</td>';
+    echo '<td class="borrower_name">' . $row[2] . '</td>';
+    echo '<td class="borrower_netid">' . $row[3] . '</td>';
+    echo '<td class="pickup_datetime">' . $row[4] . '</td>';
+    echo '<td class="due_datetime">' . $row[5] . '</td>';
+    echo '</tr>';
+    $row++;
 }
-
-echo '<tr' . $class . '>';
-echo '<td class="item_name">' . $cells[$row][0] . '</td>';
-echo '<td class="item_description">' . $cells[$row][1] . '</td>';
-echo '<td class="borrower_name">' . $cells[$row][2] . '</td>';
-echo '<td class="borrower_netid">' . $cells[$row][3] . '</td>';
-echo '<td class="pickup_datetime">' . $cells[$row][4] . '</td>';
-echo '<td class="due_datetime">' . $cells[$row][5] . '</td>';
-echo '</tr>';
-$row++;
-}
-fclose($fdb);
 
 ?>
   </tbody>
