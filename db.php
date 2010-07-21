@@ -6,7 +6,7 @@ class FlatFileDB {
     private $cell_seperator = NULL;
     private $fdb = NULL;
 
-    function __construct($db_filename, $table_seperator="=*=*=", $cell_seperator="")
+    function __construct($db_filename, $table_seperator="=.=.=", $cell_seperator="")
     {
         // Creates a FlatFileDB for $db_filename
         $this->db_filename = $db_filename;
@@ -81,7 +81,6 @@ class FlatFileDB {
     function getTable($table)
     {
         // Returns a 2D array of our table
-
         $this->lockDB_r();
         $lines = array();
         $range = $this->getTableRange($table);
