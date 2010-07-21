@@ -125,5 +125,37 @@ class FlatFileDB {
          */
         $this->replaceRow($table, $row_number, NULL);
     }
+
+    function newRow($table, $new_row)
+    {
+        /*
+         * Adds the row $new_row to the end of $table
+         *
+         */
+        $temp_file = tempnam(sys_get_temp_dir(), 'RKET');
+        copy($this->db_filename, $temp_file);
+        // Locking the temporary DB after creating it won't guarantee that it
+        // wasn't modified in the split second between creating it and locking
+        // it, but it's better than nothing
+        $tempdb = new SplFileObject($temp_file);
+        $tempdb->flock(LOCK_SH);
+        $this->lockDB_r();
+        $range = $this->getTableRange($table);
+        $this->unlockDB();
+        $this->openDB('w');
+        $this->lockDB_w();
+        $lineno = 0;
+        foreach ($tempdb as $row) {
+            if ($lineno == $range[1] + 1) {
+                // We're on the line after the current last line in our table
+                $this->fdb->fwrite($new_row);
+            }
+            $this->fdb->fwrite($row);
+            $lineno++;
+        }
+        $this->openDB('r');
+        $this->unlockDB();
+        unlink($temp_file);
+    }
 }
 ?>
