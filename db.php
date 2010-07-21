@@ -15,9 +15,9 @@ class FlatFileDB {
         $this->fdb = new SplFileObject($this->db_filename);
     }
 
-    function openDB($mode='r')
+    private function openDB($mode='r')
     {
-        $this->fdb->openFile($mode);
+        $this->fdb = new SplFileObject($this->db_filename, $mode);
     }
 
 
