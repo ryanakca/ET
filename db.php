@@ -110,7 +110,7 @@ class FlatFileDB {
         $this->lockDB_w();
         $this->openDB('r+');
         $this->fdb->seek($range[0] + $row_number);
-        $this->fdb->fwrite($new_line);
+        $this->fdb->fwrite($new_row);
         $this->openDB('r');
         $this->unlockDB();
     }
