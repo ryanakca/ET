@@ -94,10 +94,10 @@ class FlatFileDB {
         return $lines;
     }
 
-    public function replaceRow($table, $row_number, $new_line)
+    function replaceRow($table, $row_number, $new_row)
     {
         /*
-         * Replaces the row $row_number in the table $table with the row 
+         * Replaces the row $row_number in the table $table with the row
          * $new_row.
          *
          * $row_number should be an int starting at 0
