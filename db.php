@@ -1,13 +1,18 @@
 <?php
 class FlatFileDB {
 
+    private $db_filename = NULL;
+    private $table_seperator = NULL;
+    private $cell_seperator = NULL;
+    private $fdb = NULL;
+
     function __construct($db_filename, $table_seperator="=*=*=", $cell_seperator="")
     {
         // Creates a FlatFileDB for $db_filename
-        var $db_filename = $db_filename;
-        var $table_seperator = $table_seperator;
-        var $cell_seperator = $cell_seperator;
-        var $fdb = new SplFileObject($this->db_filename);
+        $this->db_filename = $db_filename;
+        $this->table_seperator = $table_seperator;
+        $this->cell_seperator = $cell_seperator;
+        $this->fdb = new SplFileObject($this->db_filename);
     }
 
     function openDB($mode='r')
