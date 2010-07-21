@@ -38,7 +38,7 @@ class FlatFileDB {
         $this->fdb->flock(LOCK_UN);
     }
 
-    function getTableRange($table)
+    private function getTableRange($table)
     {
         // Returns the first and last line number of a table, excluding the 
         // header.
@@ -76,12 +76,12 @@ class FlatFileDB {
         }
     }
 
-    public function getTable($table)
+    function getTable($table)
     {
         // Returns a 2D array of our table
-        
+
         $this->lockDB_r();
-        $lines = [];
+        $lines = array();
         $range = $this->getTableRange($table);
         $this->fdb->seek($range[0]);
         for ($i = 0; $i < ($range[1] - $range[0]); $i++) {
