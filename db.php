@@ -115,7 +115,7 @@ class FlatFileDB {
         $this->unlockDB();
     }
 
-    public function deleteRow($table, $row_number)
+    function deleteRow($table, $row_number)
     {
         /*
          * Deletes the row $row_number in the table $table.
