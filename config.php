@@ -1,6 +1,6 @@
 <?php
 // Database filename
-$db_filename = 'et_db.txt';
+$db_filename = '/var/www/localhost/ET/et_db.txt';
 // Seperators to use in the database
 $table_sep = '=.=.=';
 $cell_sep = '';

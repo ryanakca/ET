@@ -1,8 +1,8 @@
 <?php
 // Open the database
 
-include 'config.php';
-include 'db.php';
+include '../config.php';
+include '../db.php';
 
 
 $i_name   = $_POST['item_name'];

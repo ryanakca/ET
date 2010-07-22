@@ -9,7 +9,7 @@
     #ui-timepicker-div dl dt{ height: 25px; }
     #ui-timepicker-div dl dd{ margin: -25px 0 10px 65px; }
 </style>
-<?php include 'header.php'; ?>
+<?php include '../header.php'; ?>
 <script type="text/javascript">
     $(document).ready($(function() {
         $('#pickup_datetime').datetimepicker({
@@ -38,6 +38,6 @@
 <p><input type="hidden" id="editrow" name="editrow" value="<?php echo $_REQUEST['row']; ?>" /></p>
 <p><input type="submit" /></p>
 </form>
-<p><a href="et-lo.php">View loaned out items</a></p>
+<?php include 'footer.php' ?>
 </body>
 </html>

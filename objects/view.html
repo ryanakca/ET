@@ -5,18 +5,18 @@
     <title>Currently Loaned Out Items</title>
     <link type="text/css" rel="stylesheet" href="css/et.css" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-    <?php include 'header.php' ?>
+    <?php include '../header.php' ?>
     <script type="text/javascript">
     function addEDS() {
-            var $curTdPerRow = $('#loanedout tbody tr:first td').length;
-            $('#loanedout thead tr').append('<th>Edit</th>');
-            $('#loanedout thead tr').append('<th>Delete</th>');
-            $rows = $('#loanedout tbody tr').length;
+            var $curTdPerRow = $('#objects tbody tr:first td').length;
+            $('#objects thead tr').append('<th>Edit</th>');
+            $('#objects thead tr').append('<th>Delete</th>');
+            $rows = $('#objects tbody tr').length;
             for (i = 0; i < $rows; i++) {
-                $('#loanedout tbody tr:eq('+i+')').append('<td id="editrow'+i+'" class="edit">Yes</td>');
-                $('#loanedout tbody tr:eq('+i+')').append('<td id="delrow'+i+'" class="delete">Yes</td>');
+                $('#objects tbody tr:eq('+i+')').append('<td id="editrow'+i+'" class="edit">Yes</td>');
+                $('#objects tbody tr:eq('+i+')').append('<td id="delrow'+i+'" class="delete">Yes</td>');
             }
-            $('#loanedout').tablesorter();
+            $('#objects').tablesorter();
     };
     function toUrlOptions(data) {
             var retStr = '';
@@ -26,7 +26,7 @@
             return retStr.substring(0, retStr.lastIndexOf('&'));
     };
     $(document).ready(function(){
-                $('#loanedout').load('et-lo-table.php', addEDS);
+            addEDS();
     });
     $('td.edit').live('click', function(){
             var $row = $(this).attr('id');
@@ -38,22 +38,49 @@
                 });
             });
             $post_data['row'] = $row;
-            $(window.location).attr('href', 'et-ed.html?'+toUrlOptions($post_data));
+            $(window.location).attr('href', 'et-obe.html?'+toUrlOptions($post_data));
     });
     $('td.delete').live('click', function(){
             var $row = $(this).attr('id');
             if (confirm("Really delete this entry?")) {
-                $.post("et-de.php", { row: $row });
-                $('#loanedout').load('et-lo-table.php', addEDS);
+                $.post("et-obd.php", { row: $row });
+                location.reload(true);
             }
     });
     </script>
   </head>
   <body>
-    <h1>Currently Loaned Out Items</h1>
+    <h1>Objects that can be loaned out</h1>
     <p><em>Click on a column header to sort that column.</em></p>
-    <table id="loanedout">
+    <table id="objects">
+      <thead>
+    <tr>
+      <th>Item Name</th>
+    </tr>
+  </thead>
+  <tbody>
+<?php
+include '../config.php';
+include '../db.php';
+
+$fdb = new FlatFileDB($db_filename, $table_sep, $cell_sep);
+
+foreach ($fdb->getTable($objects_table) as $rownum => $row) {
+    $class = '';
+
+    if ($rownum % 2 == 0) {
+        $class = ' class="alt"';
+    }
+
+    echo '<tr' . $class . '>';
+    echo '<td class="item_name">' . $row[0] . '</td>';
+    echo '</tr>';
+    $row++;
+}
+
+?>
+  </tbody>
     </table>
-  <p><a href="et-so.html">Sign out an item</a></p>
+    <?php include 'footer.php' ?>
   </body>
 </html>

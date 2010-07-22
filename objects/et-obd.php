@@ -1,11 +1,11 @@
 <?php
 
-include 'config.php';
-include 'db.php';
+include '../config.php';
+include '../db.php';
 
 $empty_check = implode('', $_POST);
 if (empty($empty_check)) {
-    echo header('Location: et-lo.php');
+    echo header('Location: view.php');
 } else {
     // $_POST['row'] is in the format: delrowX
     // where X is the row we want to delete.
@@ -13,7 +13,7 @@ if (empty($empty_check)) {
 
     $fdb = new FlatFileDB($db_filename, $table_sep, $cell_sep);
 
-    $fdb->deleteRow($loans_table, $row);
+    $fdb->deleteRow($objects_table, $row);
 }
 
 ?>

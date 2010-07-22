@@ -9,8 +9,8 @@
   </thead>
   <tbody>
 <?php
-include 'config.php';
-include 'db.php';
+include '../config.php';
+include '../db.php';
 
 $fdb = new FlatFileDB($db_filename, $table_sep, $cell_sep);
 

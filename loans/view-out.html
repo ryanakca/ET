@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Currently Loaned Out Items</title>
+    <link type="text/css" rel="stylesheet" href="css/et.css" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <?php include '../header.php' ?>
+    <script type="text/javascript">
+    function addEDS() {
+            var $curTdPerRow = $('#loanedout tbody tr:first td').length;
+            $('#loanedout thead tr').append('<th>Edit</th>');
+            $('#loanedout thead tr').append('<th>Delete</th>');
+            $rows = $('#loanedout tbody tr').length;
+            for (i = 0; i < $rows; i++) {
+                $('#loanedout tbody tr:eq('+i+')').append('<td id="editrow'+i+'" class="edit">Yes</td>');
+                $('#loanedout tbody tr:eq('+i+')').append('<td id="delrow'+i+'" class="delete">Yes</td>');
+            }
+            $('#loanedout').tablesorter();
+    };
+    function toUrlOptions(data) {
+            var retStr = '';
+            for (var i in data) {
+                retStr += i + '=' + escape(data[i]) + '&';
+            }
+            return retStr.substring(0, retStr.lastIndexOf('&'));
+    };
+    $(document).ready(function(){
+                $('#loanedout').load('../pub/et-lo-table.php', addEDS);
+    });
+    $('td.edit').live('click', function(){
+            var $row = $(this).attr('id');
+            var $post_data = [];
+            var $my_row = $(this).parent();
+            $my_row.each(function() {
+                $(this).find('td').each(function() {
+                    $post_data[this.className] = this.innerHTML;
+                });
+            });
+            $post_data['row'] = $row;
+            $(window.location).attr('href', 'et-ed.html?'+toUrlOptions($post_data));
+    });
+    $('td.delete').live('click', function(){
+            var $row = $(this).attr('id');
+            if (confirm("Really delete this entry?")) {
+                $.post("et-de.php", { row: $row });
+                $('#loanedout').load('../pub/et-lo-table.php', addEDS);
+            }
+    });
+    </script>
+  </head>
+  <body>
+    <h1>Currently Loaned Out Items</h1>
+    <p><em>Click on a column header to sort that column.</em></p>
+    <table id="loanedout">
+    </table>
+    <?php include 'footer.php' ?>
+  </body>
+</html>

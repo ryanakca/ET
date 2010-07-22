@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Equipment tracker</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<style type="text/css">
+    #ui-timepicker-div dl{ text-align: left; }
+    #ui-timepicker-div dl dt{ height: 25px; }
+    #ui-timepicker-div dl dd{ margin: -25px 0 10px 65px; }
+</style>
+<?php include '../header.php'; ?>
+<script type="text/javascript">
+    $(document).ready($(function() {
+        $('#pickup_datetime').datetimepicker({
+                ampm: false
+        });
+        $('#due_datetime').datetimepicker({
+                ampm: false
+        });
+        $('#t_adv').click(function(){
+                $('#adv').fadeIn("slow");
+       });
+    }));
+</script>
+</head>
+<body>
+<h1>Add equipment</h1>
+<form method="post" action="add.php">
+<fieldset>
+<legend>Item</legend>
+<p><label for="item_name">Name:</label><input type="text" size="50" name="item_name" id="item_name" /></p>
+</fieldset>
+<p><input type="submit" /></p>
+</form>
+<?php include 'footer.php' ?>
+</body>
+</html>
