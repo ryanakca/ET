@@ -6,6 +6,8 @@ $table_sep = '=.=.=';
 $cell_sep = '';
 // DateTime format
 $dt_fmt = 'o-m-d H:i';
+// Base path in docroot
+$base_path = '/';
 
 // Table names
 $loans_table = 'Loans';
