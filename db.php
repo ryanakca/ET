@@ -1,6 +1,34 @@
 <?php
 class FlatFileDB {
 
+    /*
+     * A Flat File Database.
+     *
+     * You can have multiple tables in a flat file. Each database is prefixed
+     * with a line containing the table seperator and the table name. Following
+     * are rows in the table, where cells are seperated with cell seperators.
+     *
+     * Example flat file DB (table seperator: =====, cell seperator: @):
+     *
+     * ===== Table1 =====
+     * a@b@c@d@e
+     * f@g@h@i@j
+     * k@l@m@n@o
+     * ===== Table2 =====
+     * z@y@x@w@v
+     * u@t@s@r@q
+     * p@o@n@m@l
+     *
+     * Defaults:
+     *  table_seperator: =.=.=
+     *  cell_seperator:  (^_ is C0 Unit Seperator from ISO646 (ASCII), to
+     *                      enter with a keyboard, type: Ctrl-v-_    .)
+     *
+     * Coding conventions:
+     *  Row numbers start at 0
+     *
+     */
+
     private $db_filename = NULL;
     private $table_seperator = NULL;
     private $cell_seperator = NULL;
@@ -74,8 +102,16 @@ class FlatFileDB {
 
     private function getTableRange($table)
     {
-        // Returns the first and last line number of a table, excluding the
-        // header.
+        /* Get the lines in the flat file DB occupied by the table's data
+         *
+         * $table (string): name of the table
+         *
+         * returns: Array(
+         *               [0] => line number of the table's first data row,
+         *               [1] => line number of the table's last data row
+         *          )
+         *
+         */
 
         $this->lockDB_r();
         $limits = array();
@@ -88,7 +124,9 @@ class FlatFileDB {
         foreach ($this->fdb as $lineno => $row) {
             if (!$in_table) {
                 if (preg_match('/^'.$this->table_seperator . ' ' . $table . ' ' . $this->table_seperator .'.*/', $row)) {
+                    // We're on the header of our table.
                     $in_table = true;
+                    // Our table data starts on the next line.
                     $limits[] = $lineno + 1;
                 }
             } else {
@@ -112,34 +150,67 @@ class FlatFileDB {
 
     function getTable($table)
     {
-        // Returns a 2D array of our table
+        /* Return a 2D array of our table
+         *
+         * $table (string): Name of the table
+         *
+         * Returns: A 2D array representing our table.
+         *
+         */
+
         $this->lockDB_r();
         $lines = array();
         $range = $this->getTableRange($table);
         $this->fdb->seek($range[0]);
-        for ($i = 0; $i < ($range[1] - $range[0] + 1); $i++) {
-            $lines[] = explode($this->cell_seperator, $this->fdb->current());
-            $this->fdb->next();
+
+        // Possible cases:
+        //  1. There are no rows in our table:
+        //    $range[1] - $range[0] = -1
+        //  2. There is one row in our table:
+        //    $range[1] - $range[0] = 0
+        //  3. There are many rows in our table:
+        //    $range[1] - $range[0] > 0
+        if (($range[1] - $range[0]) != -1) {
+            // Invariant: $row_num will always be the number of the row we are
+            //            exploding.
+            // We need to compare with a less-or-equal instead of a
+            // strictly-less because the last row will have a $row_num of
+            // $range[1] - $range[0].
+            for ($row_num = 0; $row_num <= ($range[1] - $range[0]); $row_num++) {
+                $lines[] = explode($this->cell_seperator, $this->fdb->current());
+                $this->fdb->next();
+            }
         }
         return $lines;
     }
 
     function deleteRow($table, $row_number)
     {
-        /*
-         * Deletes the row $row_number in the table $table.
+        /* Delete a specific row in our table.
          *
-         * $row_number should be an int starting at 0
+         * $table (string): Name of the table
+         * $row_number (int): Row to be deleted
+         *
+         * Returns: nothing
          *
          */
-        $this->createTempDB_readonly();
         $range = $this->getTableRange($table);
+
+        // Use strictly-greater because ($range[1] - $range[0]) == the number of
+        // the last row in the table.
+        if ($rownumber > ($range[1] - $range[0])) {
+            // We've been asked to delete a row that's not in the table.
+            die('Error: Tried to delete a row not in table.');
+        }
+
+        $this->createTempDB_readonly();
         $this->openDB('w');
         $this->lockDB_w();
         foreach ($this->tempdb as $lineno => $row) {
-            if ($lineno != $range[0] + $row_number) {
+            // Important: Users must remember that row numbers start at 0
+            if ($lineno != ($range[0] + $row_number)) {
                 $this->fdb->fwrite($row);
-            } 
+            }
         }
         $this->openDB('r');
         $this->unlockDB();
@@ -157,22 +228,43 @@ class FlatFileDB {
          *
          * returns: nothing
          */
+
+        // We need to include the "\n" because PHP doesn't automatically insert
+        // a newline and the end of lines. Without it, we end up with multiple
+        // rows on one line.
+        $new_row_str = implode($this->cell_seperator, $new_row) . "\n";
+
         $this->createTempDB_readonly();
-        $this->lockDB_r();
         $range = $this->getTableRange($table);
-        $this->unlockDB();
+
+        // $append will be set to true if we want to append after the last row
+        // in our table.
+        $append = false;
+        // Use strictly-greater because the last row number in a table will be
+        // $range[1] - $range[0].
+        if ($position > ($range[1] - $range[0])) {
+            $append = true;
+        }
+
         $this->openDB('w');
         $this->lockDB_w();
-        $insert_row = implode($this->cell_seperator, $new_row);
-        $lineno = 0;
-        foreach ($this->tempdb as $row) {
-            if ($lineno == $range[1] + $position) {
-                // We're on the line after the current last line in our table
-                $this->fdb->fwrite(implode($this->cell_seperator, $new_row));
+
+        foreach ($this->tempdb as $lineno => $row) {
+            if ($append && ($lineno == ($range[1] + 1))) {
+                // $row is either EOF or the next table's header. We want to
+                // insert the new row here before inserting the header or EOF.
+                $this->fdb->fwrite($new_row_str);
+            } elseif (!$append && ($lineno == ($range[0] + $position))) {
+                // Insert the row so that it has row number $position
+                $this->fdb->fwrite($new_row_str);
             }
+            // After exiting an if/elseif clause: We can proceed to insert the
+            // row that used to have row number $position, along with the rest
+            // of the rows.
+            // Otherwise: Insert the rows that come before the new one.
             $this->fdb->fwrite($row);
-            $lineno++;
         }
+
         $this->openDB('r');
         $this->unlockDB();
         $this->destroyTempDB();
@@ -185,7 +277,7 @@ class FlatFileDB {
          *
          * $table (string): name of the table
          * $row_nuber (int): row number to edit
-         * $new_row (array): An array containing the new version of the row
+         * $new_row (array): An array containing the cells of the new row
          *
          * returns: nothing
          *
@@ -197,9 +289,29 @@ class FlatFileDB {
          * with a 2GB database file. However, as it stands, we're only working
          * with database files < 1 kilobyte.
          */
+
+        // Delete the row number X in $table
         $this->deleteRow($table, $row_number);
-        $this->insertRow($table, $row_number - 1, $new_row);
+        // Insert a row that will have the row number X
+        $this->insertRow($table, $row_number, $new_row);
     }
 
+    function newRow($table, $new_row)
+    {
+        /*
+         * Appends a new row to the end of the table
+         *
+         * $table (string): name of the table
+         * $new_row (array): An array containing the new row's cells
+         *
+         * returns: nothing
+         *
+         */
+        $range = $this->getTableRange($table);
+        // $this->insertRow will assume we want to append if $rownum is greater
+        // than the row number of the last row in our table.
+        $rownum = $range[1] + 1;
+        $this->insertRow($table, $rownum, $new_row);
+    }
 }
 ?>
