@@ -30,7 +30,7 @@ if (empty($empty_check)) {
         $b_time->add(new DateInterval('P1W'));
         $d_time->add(new DateInterval('P1W'));
     }
-    echo header('Location: et-lo.php');
+    echo header('Location: view-out.html');
 }
 
 ?>

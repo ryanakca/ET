@@ -23,7 +23,7 @@ if (empty($empty_check)) {
         $entry[$key] = htmlspecialchars($val);
     }
     $fdb->editRow($loans_table, $erow, $entry);
-    echo header('Location: et-lo.php');
+    echo header('Location: view-out.html');
 }
 
 ?>
