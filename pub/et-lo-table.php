@@ -17,7 +17,7 @@ $fdb = new FlatFileDB($db_filename, $table_sep, $cell_sep);
 foreach ($fdb->getTable($loans_table) as $rownum => $row) {
     $class = '';
 
-    if (date($row[5]) < date($dt_fmt)) {
+    if (date($row[4]) < date($dt_fmt)) {
         $class = ' class="late"';
     } elseif ($rownum % 2 == 0) {
         $class = ' class="alt"';
