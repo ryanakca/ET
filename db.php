@@ -4,7 +4,7 @@ class FlatFileDB {
     private $db_filename = NULL;
     private $table_seperator = NULL;
     private $cell_seperator = NULL;
-    private $tempdb_filename = NULL;
+    private $tempdb = NULL;
     private $fdb = NULL;
 
     function __construct($db_filename, $table_seperator="=.=.=", $cell_seperator="")
@@ -44,18 +44,17 @@ class FlatFileDB {
         /*
          * Create a temporary, shared-lock copy of our database
          *
-         * Returns: an SplFileObject for our temporary DB
+         * Returns: nothing
          *
          */
 
-        $this->tempdb_filename = tempnam(sys_get_temp_dir(), 'RKET');
-        copy($this->db_filename, $this->tempdb_filename);
+        $tempdb_filename = tempnam(sys_get_temp_dir(), 'RKET');
+        copy($this->db_filename, $tempdb_filename);
         // Locking the temporary DB after creating it won't guarantee that it
         // wasn't modified in the split second between creating it and locking
         // it, but it's better than nothing
-        $tempdb = new SplFileObject($temp_file);
-        $tempdb->flock(LOCK_SH);
-        return $tempdb;
+        $this->tempdb = new SplFileObject($tempdb_filename);
+        $this->tempdb->flock(LOCK_SH);
     }
 
     private function destroyTempDB()
@@ -66,10 +65,10 @@ class FlatFileDB {
          * Returns: nothing
          *
          */
-        if (!is_null($this->tempdb_filename)) {
-            flock($this->tempdb_filename, LOCK_UN);
-            unlink($this->tempdb_filename);
-            $this->tempdb_filename = NULL;
+        if (!is_null($this->tempdb)) {
+            $this->tempdb->flock(LOCK_UN);
+            unlink($this->tempdb->getRealPath());
+            $this->tempdb = NULL;
         }
     }
 
@@ -133,16 +132,14 @@ class FlatFileDB {
          * $row_number should be an int starting at 0
          *
          */
-        $tempdb = $this->createTempDB_readonly();
+        $this->createTempDB_readonly();
         $range = $this->getTableRange($table);
         $this->openDB('w');
         $this->lockDB_w();
-        $lineno = 0;
-        foreach ($tempdb as $row) {
-            if ($lineno != $range[1] + $row_number) {
-                $this->fdb->fwrite($new_row);
-            }
-            $lineno++;
+        foreach ($this->tempdb as $lineno => $row) {
+            if ($lineno != $range[0] + $row_number) {
+                $this->fdb->fwrite($row);
+            } 
         }
         $this->openDB('r');
         $this->unlockDB();
@@ -160,7 +157,7 @@ class FlatFileDB {
          *
          * returns: nothing
          */
-        $tempdb = $this->createTempDB_readonly();
+        $this->createTempDB_readonly();
         $this->lockDB_r();
         $range = $this->getTableRange($table);
         $this->unlockDB();
@@ -168,7 +165,7 @@ class FlatFileDB {
         $this->lockDB_w();
         $insert_row = implode($this->cell_seperator, $new_row);
         $lineno = 0;
-        foreach ($tempdb as $row) {
+        foreach ($this->tempdb as $row) {
             if ($lineno == $range[1] + $position) {
                 // We're on the line after the current last line in our table
                 $this->fdb->fwrite(implode($this->cell_seperator, $new_row));
