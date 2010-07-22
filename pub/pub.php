@@ -5,7 +5,7 @@
     <title>Currently Loaned Out Items</title>
     <link type="text/css" rel="stylesheet" href="css/et.css" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-    <?php include 'header.php' ?>
+    <?php include '../header.php' ?>
     <script type="text/javascript">
     $(document).ready(function(){
         $('#loanedout').load('et-lo-table.php', function(){
