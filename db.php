@@ -71,7 +71,7 @@ class FlatFileDB {
                     break;
                 } elseif ($this->fdb->eof()) {
                     // We have reached the end of our DB
-                    $limits[] = $this->fdb->ftell() - 1;
+                    $limits[] = $lineno - 1;
                 }
             }
         }
