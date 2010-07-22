@@ -7,7 +7,6 @@ include 'db.php';
 $fdb = new FlatFileDB($db_filename, $table_sep, $cell_sep);
 
 $i_name   = $_POST['item_name'];
-$i_desc   = $_POST['item_description'];
 $b_name   = $_POST['borrower_name'];
 $b_netid  = $_POST['borrower_netid'];
 $b_time   = new DateTime('@'.strtotime($_POST['pickup_datetime']));
@@ -21,7 +20,7 @@ if (empty($empty_check)) {
     // Set $b_rep to 1 if not null;
     $b_rep = (isset($_POST['repetition']) && !empty($_POST['repetition'])) ? $_POST['repetition'] : 1;
     for ($rep = 0; $rep < $b_rep; $rep++) {
-        $entry = array($i_name, $i_desc, $b_name, $b_netid, $b_time->format($dt_fmt), $d_time->format($dt_fmt));
+        $entry = array($i_name, $b_name, $b_netid, $b_time->format($dt_fmt), $d_time->format($dt_fmt));
         foreach ($entry as $key => $val) {
             $entry[$key] = htmlspecialchars($val);
         }

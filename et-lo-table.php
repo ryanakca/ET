@@ -1,7 +1,6 @@
   <thead>
     <tr>
       <th>Item Name</th>
-      <th>Item Description</th>
       <th>Borrower Name</th>
       <th>Borrower NetID</th>
       <th>Pickup Time</th>
@@ -26,11 +25,10 @@ foreach ($fdb->getTable($loans_table) as $rownum => $row) {
 
     echo '<tr' . $class . '>';
     echo '<td class="item_name">' . $row[0] . '</td>';
-    echo '<td class="item_description">' . $row[1] . '</td>';
-    echo '<td class="borrower_name">' . $row[2] . '</td>';
-    echo '<td class="borrower_netid">' . $row[3] . '</td>';
-    echo '<td class="pickup_datetime">' . $row[4] . '</td>';
-    echo '<td class="due_datetime">' . $row[5] . '</td>';
+    echo '<td class="borrower_name">' . $row[1] . '</td>';
+    echo '<td class="borrower_netid">' . $row[2] . '</td>';
+    echo '<td class="pickup_datetime">' . $row[3] . '</td>';
+    echo '<td class="due_datetime">' . $row[4] . '</td>';
     echo '</tr>';
     $row++;
 }
