@@ -4,6 +4,7 @@ class FlatFileDB {
     private $db_filename = NULL;
     private $table_seperator = NULL;
     private $cell_seperator = NULL;
+    private $tempdb_filename = NULL;
     private $fdb = NULL;
 
     function __construct($db_filename, $table_seperator="=.=.=", $cell_seperator="")
@@ -38,15 +39,46 @@ class FlatFileDB {
         $this->fdb->flock(LOCK_UN);
     }
 
+    private function createTempDB_readonly()
+    {
+        /*
+         * Create a temporary, shared-lock copy of our database
+         *
+         * Returns: an SplFileObject for our temporary DB
+         *
+         */
+
+        $this->tempdb_filename = tempnam(sys_get_temp_dir(), 'RKET');
+        copy($this->db_filename, $this->tempdb_filename);
+        // Locking the temporary DB after creating it won't guarantee that it
+        // wasn't modified in the split second between creating it and locking
+        // it, but it's better than nothing
+        $tempdb = new SplFileObject($temp_file);
+        $tempdb->flock(LOCK_SH);
+        return $tempdb;
+    }
+
+    private function destroyTempDB()
+    {
+        /*
+         * Destroys our temporary database
+         *
+         * Returns: nothing
+         *
+         */
+        if (!is_null($this->tempdb_filename)) {
+            flock($this->tempdb_filename, LOCK_UN);
+            unlink($this->tempdb_filename);
+            $this->tempdb_filename = NULL;
+        }
+    }
+
     private function getTableRange($table)
     {
         // Returns the first and last line number of a table, excluding the
         // header.
-        //
-        // Caveat: We don't lock the table, you should do that in the function
-        // you call this one from. Otherwise, someone might edit the database
-        // and invalidate this table range.
 
+        $this->lockDB_r();
         $limits = array();
 
         // Return to the top of file
@@ -75,6 +107,7 @@ class FlatFileDB {
                 }
             }
         }
+        $this->unlockDB();
         return $limits;
     }
 
@@ -85,33 +118,11 @@ class FlatFileDB {
         $lines = array();
         $range = $this->getTableRange($table);
         $this->fdb->seek($range[0]);
-        for ($i = 0; $i < ($range[1] - $range[0]); $i++) {
+        for ($i = 0; $i < ($range[1] - $range[0] + 1); $i++) {
             $lines[] = explode($this->cell_seperator, $this->fdb->current());
             $this->fdb->next();
         }
-        $this->unlockDB();
         return $lines;
-    }
-
-    function replaceRow($table, $row_number, $new_row)
-    {
-        /*
-         * Replaces the row $row_number in the table $table with the row
-         * $new_row.
-         *
-         * $row_number should be an int starting at 0
-         *
-         */
-
-        // Replaces the row $row_number in $table with $new_line
-        $this->lockDB_r();
-        $range = $this->getTableRange($table);
-        $this->lockDB_w();
-        $this->openDB('r+');
-        $this->fdb->seek($range[0] + $row_number);
-        $this->fdb->fwrite($new_row);
-        $this->openDB('r');
-        $this->unlockDB();
     }
 
     function deleteRow($table, $row_number)
@@ -122,39 +133,76 @@ class FlatFileDB {
          * $row_number should be an int starting at 0
          *
          */
-        $this->replaceRow($table, $row_number, NULL);
+        $tempdb = $this->createTempDB_readonly();
+        $range = $this->getTableRange($table);
+        $this->openDB('w');
+        $this->lockDB_w();
+        $lineno = 0;
+        foreach ($tempdb as $row) {
+            if ($lineno != $range[1] + $row_number) {
+                $this->fdb->fwrite($new_row);
+            }
+            $lineno++;
+        }
+        $this->openDB('r');
+        $this->unlockDB();
+        $this->destroyTempDB();
     }
 
-    function newRow($table, $new_row)
+    function insertRow($table, $position, $new_row)
     {
-        /*
-         * Adds the row $new_row to the end of $table
+        /* Inserts a row in a table
          *
+         * $table (string): Name of the table in which we want to insert a row
+         * $position (int): The row number of our new row. Will cause subsequent
+         *                  row numbers to be incremented by one.
+         * $new_row (array): An array containing the cells of the new row
+         *
+         * returns: nothing
          */
-        $temp_file = tempnam(sys_get_temp_dir(), 'RKET');
-        copy($this->db_filename, $temp_file);
-        // Locking the temporary DB after creating it won't guarantee that it
-        // wasn't modified in the split second between creating it and locking
-        // it, but it's better than nothing
-        $tempdb = new SplFileObject($temp_file);
-        $tempdb->flock(LOCK_SH);
+        $tempdb = $this->createTempDB_readonly();
         $this->lockDB_r();
         $range = $this->getTableRange($table);
         $this->unlockDB();
         $this->openDB('w');
         $this->lockDB_w();
+        $insert_row = implode($this->cell_seperator, $new_row);
         $lineno = 0;
         foreach ($tempdb as $row) {
-            if ($lineno == $range[1] + 1) {
+            if ($lineno == $range[1] + $position) {
                 // We're on the line after the current last line in our table
-                $this->fdb->fwrite($new_row);
+                $this->fdb->fwrite(implode($this->cell_seperator, $new_row));
             }
             $this->fdb->fwrite($row);
             $lineno++;
         }
         $this->openDB('r');
         $this->unlockDB();
-        unlink($temp_file);
+        $this->destroyTempDB();
     }
+
+    function editRow($table, $row_number, $new_row)
+    {
+        /*
+         * Replaces a row with a new one
+         *
+         * $table (string): name of the table
+         * $row_nuber (int): row number to edit
+         * $new_row (array): An array containing the new version of the row
+         *
+         * returns: nothing
+         *
+         * Speed note: This could probably be optimized by merging the two
+         * functions together. We call getTableRange twice, when we could save
+         * time by calling it once and then just working around the fact that
+         * the range changes when we delete a row. We also create a temporary
+         * copy of the database twice. Which could be VERY slow if we're dealing
+         * with a 2GB database file. However, as it stands, we're only working
+         * with database files < 1 kilobyte.
+         */
+        $this->deleteRow($table, $row_number);
+        $this->insertRow($table, $row_number - 1, $new_row);
+    }
+
 }
 ?>
