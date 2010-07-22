@@ -26,8 +26,7 @@
 <form method="post" action="et-ed.php">
 <fieldset>
 <legend>Item</legend>
-<p><label for="item_name">Name:</label><input type="text" size="50" name="item_name" id="item_name" value="<?php echo $_REQUEST['item_name']; ?>"/></p>
-<p><label for="item_description">Description (optional):</label><input type="text" size="50" name="item_description" id="item_description" value="<?php echo $_REQUEST['item_description']; ?>" /></p>
+<p><label for="item_name">Name:</label><input readonly="true" type="text" size="50" name="item_name" id="item_name" value="<?php echo $_REQUEST['item_name']; ?>"/></p>
 <p><label for="pickup_datetime">Pickup date/time:</label><input type="text" size="20" name="pickup_datetime" id="pickup_datetime" value="<?php echo $_REQUEST['pickup_datetime']; ?>" /></p>
 <p><label for="due_datetime">Date, time:</label><input type="text" size="20" name="due_datetime" id="due_datetime" value="<?php echo $_REQUEST['due_datetime']; ?>" /></p>
 </fieldset>
