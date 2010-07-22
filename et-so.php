@@ -21,8 +21,10 @@ if (empty($empty_check)) {
     // Set $b_rep to 1 if not null;
     $b_rep = (isset($_POST['repetition']) && !empty($_POST['repetition'])) ? $_POST['repetition'] : 1;
     for ($rep = 0; $rep < $b_rep; $rep++) {
-        $entry = $i_name . $cell_sep . $i_desc . $cell_sep . $b_name . $cell_sep . $b_netid . $cell_sep . $b_time->format($dt_fmt) . $cell_sep . $d_time->format($dt_fmt) . "\n";
-        $escaped_entry = htmlspecialchars($entry);
+        $entry = array($i_name, $i_desc, $b_name, $b_netid, $b_time->format($dt_fmt), $d_time->format($dt_fmt));
+        foreach ($entry as $key => $val) {
+            $entry[$key] = htmlspecialchars($val);
+        }
         $fdb->newRow($loans_table, $entry);
         // Increment time by one week for next pass/repetition. P1W -> Period of
         // 1 Week. See ISO8601
