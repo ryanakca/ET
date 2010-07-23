@@ -1,4 +1,10 @@
 <?php
+/*
+ * Copyright (C) 2010 Ryan Kavanagh <ryanakca@kubuntu.org>
+ *
+ * See file COPYING for details
+ *
+ */
 include 'config.php';
 echo '<link type="text/css" rel="stylesheet" href="' .  $base_path . 'css/jquery-ui-1.8.custom.css" />
 <link type="text/css" rel="stylesheet" href="' .  $base_path . 'css/et.css" />

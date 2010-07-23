@@ -1,4 +1,10 @@
 <?php
+/*
+ * Copyright (C) 2010 Ryan Kavanagh <ryanakca@kubuntu.org>
+ *
+ * See file COPYING for details
+ *
+ */
 // Open the database
 
 include '../config.php';
