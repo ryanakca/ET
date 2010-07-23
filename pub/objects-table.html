@@ -1,0 +1,27 @@
+  <thead>
+    <tr>
+      <th>Item Name</th>
+    </tr>
+  </thead>
+  <tbody>
+<?php
+include '../config.php';
+include '../db.php';
+
+$fdb = new FlatFileDB($db_filename, $table_sep, $cell_sep);
+
+foreach ($fdb->getTable($objects_table) as $rownum => $row) {
+    $class = '';
+
+    if ($rownum % 2 == 0) {
+        $class = ' class="alt"';
+    }
+
+    echo '<tr' . $class . '>';
+    echo '<td class="item_name">' . $row[0] . '</td>';
+    echo '</tr>';
+    $row++;
+}
+
+?>
+  </tbody>

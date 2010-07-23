@@ -11,6 +11,9 @@
         $('#loanedout').load('et-lo-table.php', function(){
             $('#loanedout').tablesorter();
         });
+        $('#objects').load('objects-table.html', function(){
+            $('#objects').tablesorter();
+        });
     });
     </script>
   </head>
@@ -18,6 +21,9 @@
     <h1>Currently Loaned Out Items</h1>
     <p><em>Click on a column header to sort that column.</em></p>
     <table id="loanedout">
+    </table>
+    <h1>Items available for loan</h1>
+    <table id="objects">
     </table>
   </body>
 </html>
