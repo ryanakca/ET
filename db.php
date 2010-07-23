@@ -37,7 +37,10 @@ class FlatFileDB {
 
     function __construct($db_filename, $table_seperator="=.=.=", $cell_seperator="")
     {
-        // Creates a FlatFileDB for $db_filename
+        /*
+         * Constructor for FlatFileDB
+         *
+         */
         $this->db_filename = $db_filename;
         $this->table_seperator = $table_seperator;
         $this->cell_seperator = $cell_seperator;
@@ -46,24 +49,42 @@ class FlatFileDB {
 
     private function openDB($mode='r')
     {
+        /*
+         * Opens the database
+         *
+         * $mode (string): Mode in which to open the database, see PHP's
+         *                 documentation on fopen for available modes.
+         *
+         * returns: nothing
+         *
+         */
         $this->fdb = new SplFileObject($this->db_filename, $mode);
     }
 
     private function lockDB_r()
     {
-        // Locks the DB for reading
+        /*
+         * Locks the DB for reading
+         *
+         */
         $this->fdb->flock(LOCK_SH) or die('Error: Unable to lock DB for reading.');
     }
 
     private function lockDB_w()
     {
-        // Locks the DB for writing
+        /*
+         * Locks the DB for writing
+         *
+         */
         $this->fdb->flock(LOCK_EX) or die('Error: Unable to lock DB for writing.');
     }
 
     private function unlockDB()
     {
-        // Unlocks the DB
+        /*
+         * Unlocks the DB
+         *
+         */
         $this->fdb->flock(LOCK_UN);
     }
 
