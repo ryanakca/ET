@@ -1,5 +1,5 @@
 AddType application/x-httpd-php .html .htm
 AuthType Basic
-AuthName "School of Computing Equipment Tracker"
+AuthName "Equipment Tracker"
 AuthUserFile /var/www/localhost/.htpasswd
 Require valid-user
