@@ -1,0 +1,25 @@
+You'll want to modify config.php and set FULL path to the file you want to store
+the DB in. The DB file will need to be writable by the webserver.
+
+If you choose to install the equipment tracker in a subdirectory in the document
+root, and access it at http://yourhost.tld/foo/ , change $base_path accordingly
+(in this case, to '/foo/').
+
+See the file db.php for a description of the flat file database format. The
+default cell seperator is '' (^_), C0 Unit Seperator. It is extremely unlikely
+that a user will ever enter this. If you change the cell seperator, be aware
+that I do not escape it in new input. Please pick something rarely entered, lest
+it be included in input and possibly destroy the row formatting in the DB.
+
+Move the file 'htpasswd' to a location OUTSIDE of your document root and rename
+it to .htpasswd . Update the files loans/.htaccess and objects/.htaccess with
+the new location of your .htpasswd file. The default login is admin with a
+password of SoCETPW (School of Computing Equipment Tracker PassWord). You can
+add users by running
+        htpasswd /path/to/.htpasswd username
+
+
+This equipment tracker is distributed under a pseudo-BSD license. Please see the file
+COPYING for details.
+
+ -- Ryan Kavanagh <ryanakca@kubuntu.org>, Jul 23 2010
