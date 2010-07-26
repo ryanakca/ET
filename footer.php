@@ -5,8 +5,11 @@
  * See file COPYING for details
  *
  */
-echo '<p><a href="../loans/sign-out.html">Sign out items</a></p>
-<p><a href="../loans/view-out.html">View signed out items</a></p>
-<p><a href="../objects/add.html">Add items to DB</a></p>
-<p><a href="../objects/view.html">View items in DB</a></p>';
+
+include 'config.php';
+
+echo '<p><a href="'.$base_path.'loans/sign-out.html">Sign out items</a></p>
+<p><a href="'.$base_path.'loans/view-out.html">View signed out items</a></p>
+<p><a href="'.$base_path.'objects/add.html">Add items to DB</a></p>
+<p><a href="'.$base_path.'objects/view.html">View items in DB</a></p>';
 ?>

@@ -14,12 +14,12 @@
     #ui-timepicker-div dl dt{ height: 25px; }
     #ui-timepicker-div dl dd{ margin: -25px 0 10px 65px; }
 </style>
-<?php include '../header.php'; ?>
+<?php include 'header.php'; ?>
 </head>
 <body>
 <h1>Equipment Tracker</h1>
 <h2>Public interface</h2>
-<a href="pub/pub.php">View signed out and available items</a>
+<a href="<?php include 'config.php'; echo $base_path; ?>pub/index.php">View signed out and available items</a>
 <h2>Admin interface</h2>
 <?php include 'footer.php' ?>
 </body>
