@@ -18,6 +18,8 @@ password of SoCETPW (School of Computing Equipment Tracker PassWord). You can
 add users by running
         htpasswd /path/to/.htpasswd username
 
+Please ensure that 'AllowOverride All' is set for the equipment tracker's
+directory.
 
 This equipment tracker is distributed under a pseudo-BSD license. Please see the file
 COPYING for details.
