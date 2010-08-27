@@ -1,3 +1,8 @@
+ET (1.1.1)
+ * Include an empty database
+
+ -- Ryan Kavanagh <ryanakca@kubuntu.org>  Fri, 27 Aug 2010 15:07:36 -0400
+
 ET (1.1)
 
  * Fix some broken links.
